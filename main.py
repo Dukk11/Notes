@@ -1,10 +1,13 @@
-from flask import Flask
+from flask import Flask, request, redirect, url_for
 
 app = Flask(__name__)
 
+notes = []
+
 @app.route('/')
 def home():
-    return '''
+    notes_html = ''.join(f'<div class="note">{note}</div>' for note in notes)
+    return f'''
     <!doctype html>
     <html lang="en">
       <head>
@@ -20,11 +23,17 @@ def home():
           <button type="submit">Add Note</button>
         </form>
         <div id="notes">
-          <!-- Notes will be displayed here -->
+          {notes_html}
         </div>
       </body>
     </html>
     '''
+
+@app.route('/add_note', methods=['POST'])
+def add_note():
+    note = request.form['note']
+    notes.append(note)
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
